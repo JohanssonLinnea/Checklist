@@ -1,14 +1,14 @@
 import React, { useState } from "react";
-import "./App.css";
+import "./index.css";
 
 function App() {
-  const daysOfWeek = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
+  const daysOfWeek = ["Måndag", "Tisdag", "Onsdag", "Torsdag", "Fredag"];
   const [tasks, setTasks] = useState({
-    Monday: [],
-    Tuesday: [],
-    Wednesday: [],
-    Thursday: [],
-    Friday: [],
+    Måndag: [],
+    Tisdag: [],
+    Onsdag: [],
+    Torsdag: [],
+    Fredag: [],
   });
 
   const handleAddTask = (day, newTask) => {
@@ -28,7 +28,7 @@ function App() {
 
   return (
     <div className="App">
-      <h1>Weekly Checklist</h1>
+      <h1>Checklista Innesälj</h1>
       <div className="checklist-container">
         {daysOfWeek.map((day) => (
           <div key={day} className="day-checklist">
@@ -67,11 +67,11 @@ function AddTaskForm({ day, onAddTask }) {
     <form onSubmit={handleSubmit}>
       <input
         type="text"
-        placeholder={`Add a task for ${day}`}
+        placeholder={`Lägg till ny uppgift för ${day}`}
         value={newTask}
         onChange={(e) => setNewTask(e.target.value)}
       />
-      <button type="submit">Add</button>
+      <button type="submit">Lägg till</button>
     </form>
   );
 }
