@@ -4,11 +4,11 @@ import "./index.css";
 function App() {
   const daysOfWeek = ["Måndag", "Tisdag", "Onsdag", "Torsdag", "Fredag"];
   const [tasks, setTasks] = useState({
-    Måndag: [],
-    Tisdag: [],
-    Onsdag: [],
-    Torsdag: [],
-    Fredag: [],
+    Måndag: ["Reporder", "Leverans påbörjad", "Ersättningsdosor till ÅJ", "Fråga lagret om ordrar"],
+    Tisdag: ["Reporder", "Leverans påbörjad", "Frisläpp vapeordrar", "Fråga lagret om ordrar"],
+    Onsdag: ["Reporder", "Leverans påbörjad", "360 - rabatter" , "Fråga lagret om ordrar"],
+    Torsdag: ["Reporder", "Leverans påbörjad", "Frisläpp vapeordrar", "Rapport Inventering"],
+    Fredag: ["Reporder", "Leverans påbörjad", "Reklamationsrapporter", "Städa Jeeves"],
   });
 
   const handleAddTask = (day, newTask) => {
