@@ -4,7 +4,6 @@ import "./index.css";
 function App() {
   const daysOfWeek = ["Måndag", "Tisdag", "Onsdag", "Torsdag", "Fredag"];
 
-  // Load tasks from localStorage or use the default tasks
   const [tasks, setTasks] = useState(() => {
     const savedTasks = localStorage.getItem("tasks");
     return savedTasks
@@ -43,10 +42,14 @@ function App() {
         };
   });
 
-  // Save tasks to localStorage whenever tasks state changes
   useEffect(() => {
     localStorage.setItem("tasks", JSON.stringify(tasks));
   }, [tasks]);
+
+  const checkAllTasksDone = (updatedTasks) => {
+    const allTasks = Object.values(updatedTasks).flat();
+    return allTasks.every((task) => task.done);
+  };
 
   const handleAddTask = (day, newTask) => {
     if (newTask.trim() === "") return;
@@ -57,12 +60,29 @@ function App() {
   };
 
   const handleToggleTask = (day, index) => {
-    setTasks((prevTasks) => ({
-      ...prevTasks,
-      [day]: prevTasks[day].map((task, i) =>
-        i === index ? { ...task, done: !task.done } : task
-      ),
-    }));
+    setTasks((prevTasks) => {
+      const updatedTasks = {
+        ...prevTasks,
+        [day]: prevTasks[day].map((task, i) =>
+          i === index ? { ...task, done: !task.done } : task
+        ),
+      };
+
+      if (checkAllTasksDone(updatedTasks)) {
+        alert("Bra jobbat!!\nTrevlig helg!");
+
+        const resetTasks = Object.fromEntries(
+          Object.entries(updatedTasks).map(([day, tasks]) => [
+            day,
+            tasks.map((task) => ({ ...task, done: false })),
+          ])
+        );
+
+        return resetTasks;
+      }
+
+      return updatedTasks;
+    });
   };
 
   const handleRemoveTask = (day, index) => {
