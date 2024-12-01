@@ -1,40 +1,52 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./index.css";
 
 function App() {
   const daysOfWeek = ["Måndag", "Tisdag", "Onsdag", "Torsdag", "Fredag"];
-  const [tasks, setTasks] = useState({
-    Måndag: [
-      { text: "Reporder", done: false },
-      { text: "Leverans påbörjad", done: false },
-      { text: "Ersättningsdosor till ÅJ", done: false },
-      { text: "Fråga lagret om ordrar", done: false },
-    ],
-    Tisdag: [
-      { text: "Reporder", done: false },
-      { text: "Leverans påbörjad", done: false },
-      { text: "Frisläpp vapeordrar", done: false },
-      { text: "Fråga lagret om ordrar", done: false },
-    ],
-    Onsdag: [
-      { text: "Reporder", done: false },
-      { text: "Leverans påbörjad", done: false },
-      { text: "360 - rabatter", done: false },
-      { text: "Fråga lagret om ordrar", done: false },
-    ],
-    Torsdag: [
-      { text: "Reporder", done: false },
-      { text: "Leverans påbörjad", done: false },
-      { text: "Frisläpp vapeordrar", done: false },
-      { text: "Rapport Inventering", done: false },
-    ],
-    Fredag: [
-      { text: "Reporder", done: false },
-      { text: "Leverans påbörjad", done: false },
-      { text: "Reklamation rapporter", done: false },
-      { text: "Städa Jeeves", done: false },
-    ],
+
+  // Load tasks from localStorage or use the default tasks
+  const [tasks, setTasks] = useState(() => {
+    const savedTasks = localStorage.getItem("tasks");
+    return savedTasks
+      ? JSON.parse(savedTasks)
+      : {
+          Måndag: [
+            { text: "Reporder", done: false },
+            { text: "Leverans påbörjad", done: false },
+            { text: "Ersättningsdosor till ÅJ", done: false },
+            { text: "Fråga lagret om ordrar", done: false },
+          ],
+          Tisdag: [
+            { text: "Reporder", done: false },
+            { text: "Leverans påbörjad", done: false },
+            { text: "Frisläpp vapeordrar", done: false },
+            { text: "Fråga lagret om ordrar", done: false },
+          ],
+          Onsdag: [
+            { text: "Reporder", done: false },
+            { text: "Leverans påbörjad", done: false },
+            { text: "360 - rabatter", done: false },
+            { text: "Fråga lagret om ordrar", done: false },
+          ],
+          Torsdag: [
+            { text: "Reporder", done: false },
+            { text: "Leverans påbörjad", done: false },
+            { text: "Frisläpp vapeordrar", done: false },
+            { text: "Rapport Inventering", done: false },
+          ],
+          Fredag: [
+            { text: "Reporder", done: false },
+            { text: "Leverans påbörjad", done: false },
+            { text: "Reklamation rapporter", done: false },
+            { text: "Städa Jeeves", done: false },
+          ],
+        };
   });
+
+  // Save tasks to localStorage whenever tasks state changes
+  useEffect(() => {
+    localStorage.setItem("tasks", JSON.stringify(tasks));
+  }, [tasks]);
 
   const handleAddTask = (day, newTask) => {
     if (newTask.trim() === "") return;
