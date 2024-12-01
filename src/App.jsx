@@ -4,18 +4,52 @@ import "./index.css";
 function App() {
   const daysOfWeek = ["Måndag", "Tisdag", "Onsdag", "Torsdag", "Fredag"];
   const [tasks, setTasks] = useState({
-    Måndag: ["Reporder", "Leverans påbörjad", "Ersättningsdosor till ÅJ", "Fråga lagret om ordrar"],
-    Tisdag: ["Reporder", "Leverans påbörjad", "Frisläpp vapeordrar", "Fråga lagret om ordrar"],
-    Onsdag: ["Reporder", "Leverans påbörjad", "360 - rabatter" , "Fråga lagret om ordrar"],
-    Torsdag: ["Reporder", "Leverans påbörjad", "Frisläpp vapeordrar", "Rapport Inventering"],
-    Fredag: ["Reporder", "Leverans påbörjad", "Reklamationsrapporter", "Städa Jeeves"],
+    Måndag: [
+      { text: "Reporder", done: false },
+      { text: "Leverans påbörjad", done: false },
+      { text: "Ersättningsdosor till ÅJ", done: false },
+      { text: "Fråga lagret om ordrar", done: false },
+    ],
+    Tisdag: [
+      { text: "Reporder", done: false },
+      { text: "Leverans påbörjad", done: false },
+      { text: "Frisläpp vapeordrar", done: false },
+      { text: "Fråga lagret om ordrar", done: false },
+    ],
+    Onsdag: [
+      { text: "Reporder", done: false },
+      { text: "Leverans påbörjad", done: false },
+      { text: "360 - rabatter", done: false },
+      { text: "Fråga lagret om ordrar", done: false },
+    ],
+    Torsdag: [
+      { text: "Reporder", done: false },
+      { text: "Leverans påbörjad", done: false },
+      { text: "Frisläpp vapeordrar", done: false },
+      { text: "Rapport Inventering", done: false },
+    ],
+    Fredag: [
+      { text: "Reporder", done: false },
+      { text: "Leverans påbörjad", done: false },
+      { text: "Reklamation rapporter", done: false },
+      { text: "Städa Jeeves", done: false },
+    ],
   });
 
   const handleAddTask = (day, newTask) => {
     if (newTask.trim() === "") return;
     setTasks((prevTasks) => ({
       ...prevTasks,
-      [day]: [...prevTasks[day], newTask],
+      [day]: [...prevTasks[day], { text: newTask, done: false }],
+    }));
+  };
+
+  const handleToggleTask = (day, index) => {
+    setTasks((prevTasks) => ({
+      ...prevTasks,
+      [day]: prevTasks[day].map((task, i) =>
+        i === index ? { ...task, done: !task.done } : task
+      ),
     }));
   };
 
@@ -35,8 +69,15 @@ function App() {
             <h2>{day}</h2>
             <ul>
               {tasks[day].map((task, index) => (
-                <li key={index}>
-                  {task}{" "}
+                <li key={index} className={task.done ? "done" : ""}>
+                  <label>
+                    <input
+                      type="checkbox"
+                      checked={task.done}
+                      onChange={() => handleToggleTask(day, index)}
+                    />
+                    {task.text}
+                  </label>
                   <button
                     className="delete-btn"
                     onClick={() => handleRemoveTask(day, index)}
