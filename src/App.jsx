@@ -3,48 +3,66 @@ import "./index.css";
 
 function App() {
   const daysOfWeek = ["Måndag", "Tisdag", "Onsdag", "Torsdag", "Fredag"];
+  const presetTasks = {
+    Måndag: [
+      { text: "Reporder", done: false },
+      { text: "Leverans påbörjad", done: false },
+      { text: "Ersättningsdosor till ÅJ", done: false },
+      { text: "Fråga lagret om ordrar", done: false },
+    ],
+    Tisdag: [
+      { text: "Reporder", done: false },
+      { text: "Leverans påbörjad", done: false },
+      { text: "Frisläpp vapeordrar", done: false },
+      { text: "Fråga lagret om ordrar", done: false },
+    ],
+    Onsdag: [
+      { text: "Reporder", done: false },
+      { text: "Leverans påbörjad", done: false },
+      { text: "360 - rabatter", done: false },
+      { text: "Fråga lagret om ordrar", done: false },
+    ],
+    Torsdag: [
+      { text: "Reporder", done: false },
+      { text: "Leverans påbörjad", done: false },
+      { text: "Frisläpp vapeordrar", done: false },
+      { text: "Rapport Inventering", done: false },
+    ],
+    Fredag: [
+      { text: "Reporder", done: false },
+      { text: "Leverans påbörjad", done: false },
+      { text: "Reklamation rapporter", done: false },
+      { text: "Städa Jeeves", done: false },
+    ],
+  };
 
-  const [tasks, setTasks] = useState(() => {
-    const savedTasks = localStorage.getItem("tasks");
-    return savedTasks
-      ? JSON.parse(savedTasks)
-      : {
-          Måndag: [
-            { text: "Reporder", done: false },
-            { text: "Leverans påbörjad", done: false },
-            { text: "Ersättningsdosor till ÅJ", done: false },
-            { text: "Fråga lagret om ordrar", done: false },
-          ],
-          Tisdag: [
-            { text: "Reporder", done: false },
-            { text: "Leverans påbörjad", done: false },
-            { text: "Frisläpp vapeordrar", done: false },
-            { text: "Fråga lagret om ordrar", done: false },
-          ],
-          Onsdag: [
-            { text: "Reporder", done: false },
-            { text: "Leverans påbörjad", done: false },
-            { text: "360 - rabatter", done: false },
-            { text: "Fråga lagret om ordrar", done: false },
-          ],
-          Torsdag: [
-            { text: "Reporder", done: false },
-            { text: "Leverans påbörjad", done: false },
-            { text: "Frisläpp vapeordrar", done: false },
-            { text: "Rapport Inventering", done: false },
-          ],
-          Fredag: [
-            { text: "Reporder", done: false },
-            { text: "Leverans påbörjad", done: false },
-            { text: "Reklamation rapporter", done: false },
-            { text: "Städa Jeeves", done: false },
-          ],
-        };
-  });
+  const [tasks, setTasks] = useState(presetTasks);
 
+  // Fetch tasks from the backend when the app loads
   useEffect(() => {
-    localStorage.setItem("tasks", JSON.stringify(tasks));
-  }, [tasks]);
+    fetch("http://localhost:5000/tasks")
+      .then((res) => res.json())
+      .then((data) => {
+        // If backend tasks are empty, use presetTasks
+        if (Object.keys(data).length === 0) {
+          setTasks(presetTasks);
+          saveTasksToBackend(presetTasks);
+        } else {
+          setTasks(data);
+        }
+      });
+  }, []);
+
+  // Save tasks to the backend
+  const saveTasksToBackend = (updatedTasks) => {
+    fetch("http://localhost:5000/tasks", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(updatedTasks),
+    });
+  };
 
   const checkAllTasksDone = (updatedTasks) => {
     const allTasks = Object.values(updatedTasks).flat();
@@ -53,43 +71,46 @@ function App() {
 
   const handleAddTask = (day, newTask) => {
     if (newTask.trim() === "") return;
-    setTasks((prevTasks) => ({
-      ...prevTasks,
-      [day]: [...prevTasks[day], { text: newTask, done: false }],
-    }));
+    const updatedTasks = {
+      ...tasks,
+      [day]: [...tasks[day], { text: newTask, done: false }],
+    };
+    setTasks(updatedTasks);
+    saveTasksToBackend(updatedTasks);
   };
 
   const handleToggleTask = (day, index) => {
-    setTasks((prevTasks) => {
-      const updatedTasks = {
-        ...prevTasks,
-        [day]: prevTasks[day].map((task, i) =>
-          i === index ? { ...task, done: !task.done } : task
-        ),
-      };
+    const updatedTasks = {
+      ...tasks,
+      [day]: tasks[day].map((task, i) =>
+        i === index ? { ...task, done: !task.done } : task
+      ),
+    };
+    setTasks(updatedTasks);
+    saveTasksToBackend(updatedTasks);
 
-      if (checkAllTasksDone(updatedTasks)) {
-        alert("Bra jobbat!!\nTrevlig helg!");
-
-        const resetTasks = Object.fromEntries(
-          Object.entries(updatedTasks).map(([day, tasks]) => [
-            day,
-            tasks.map((task) => ({ ...task, done: false })),
-          ])
-        );
-
-        return resetTasks;
-      }
-
-      return updatedTasks;
-    });
+    // Check if all tasks are done
+    if (checkAllTasksDone(updatedTasks)) {
+      alert("Bra jobbat!!\nTrevlig helg!");
+      // Reset all tasks to unchecked
+      const resetTasks = Object.fromEntries(
+        Object.entries(updatedTasks).map(([day, tasks]) => [
+          day,
+          tasks.map((task) => ({ ...task, done: false })),
+        ])
+      );
+      setTasks(resetTasks);
+      saveTasksToBackend(resetTasks);
+    }
   };
 
   const handleRemoveTask = (day, index) => {
-    setTasks((prevTasks) => ({
-      ...prevTasks,
-      [day]: prevTasks[day].filter((_, i) => i !== index),
-    }));
+    const updatedTasks = {
+      ...tasks,
+      [day]: tasks[day].filter((_, i) => i !== index),
+    };
+    setTasks(updatedTasks);
+    saveTasksToBackend(updatedTasks);
   };
 
   return (
@@ -150,3 +171,6 @@ function AddTaskForm({ day, onAddTask }) {
 }
 
 export default App;
+
+
+
